@@ -1,14 +1,13 @@
 mod display;
 mod emulator;
 
-use std::{path::Path, io::Read};
 use crate::display::Display;
 use crate::emulator::Emulator;
+use std::{io::Read, path::Path};
 
 const PROGRAM_PATH: &str = "ibm-logo.ch8";
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    
     // initialize chip-8 emulator
 
     let mut emulator = Emulator::new();
@@ -25,11 +24,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let event_subsystem = display.sdl_context.event()?;
     event_subsystem.register_custom_event::<crate::display::Event>();
     let event_sender = event_subsystem.event_sender();
-    
+
     std::thread::spawn(move || {
         emulator.run(event_sender).unwrap();
     });
-
 
     Ok(())
 }
