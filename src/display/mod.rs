@@ -1,4 +1,16 @@
-use sdl2::{render::Canvas, video::Window, pixels::Color, event::Event, keyboard::Keycode, Sdl};
+use std::time::Duration;
+
+use sdl2::{render::Canvas, video::Window, pixels::Color, keyboard::Keycode, Sdl};
+
+
+
+
+pub(crate) enum Event {
+    Clear,
+    Quit,
+}
+
+
 
 pub(crate) struct Display {
     pub sdl_context: Sdl,
@@ -24,42 +36,26 @@ impl Display {
             canvas
         }
     }
-    pub fn demo(&mut self) {
-        self.canvas.set_draw_color(Color::RGB(255, 0, 0));
+    pub fn test(&mut self) {
+        self.canvas.set_draw_color(Color::RGB(0, 0, 0));
         self.canvas.clear();
         self.canvas.present();
 
         let mut event_pump = self.sdl_context.event_pump().unwrap();
         'running: loop {
             for event in event_pump.poll_iter() {
-                match event {
-                    Event::Quit {..}
-                    | Event::KeyDown {
-                        keycode: Some(Keycode::Escape),
-                        ..
-                    } => break 'running,
-                    _ => {}
+                let user_event = event.as_user_event_type().unwrap();
+                match user_event {
+                    Event::Clear => {
+                        self.canvas.set_draw_color(Color::RGB(0, 0, 0));
+                    },
+                    Quit => break 'running,
                 }
             }
-        }
-    }
-    pub fn run(&mut self) {
-        self.canvas.set_draw_color(Color::RGB(255, 0, 0));
-        self.canvas.clear();
-        self.canvas.present();
 
-        let mut event_pump = self.sdl_context.event_pump().unwrap();
-        'running: loop {
-            for event in event_pump.poll_iter() {
-                match event {
-                    Event::Quit {..}
-                    | Event::KeyDown {
-                        keycode: Some(Keycode::Escape),
-                        ..
-                    } => break 'running,
-                    _ => {}
-                }
-            }
+            self.canvas.clear();
+            self.canvas.present();
+            ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 30));
         }
     }
 }
