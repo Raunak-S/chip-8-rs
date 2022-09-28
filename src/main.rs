@@ -1,55 +1,35 @@
 mod display;
+mod emulator;
 
 use std::{path::Path, io::Read};
 use crate::display::Display;
+use crate::emulator::Emulator;
 
 const PROGRAM_PATH: &str = "ibm-logo.ch8";
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-
-    let mut mem: [u8;4096] = [0;4096];
-    let mut pc: u16 = 0;
-    let mut I: u16 = 0;
-    let stack: Vec<u16> = vec![];
     
+    // initialize chip-8 emulator
+
+    let mut emulator = Emulator::new();
+
     // load Chip-8 program into memory
 
-    let mut reader = std::io::BufReader::new(std::fs::File::open(PROGRAM_PATH)?);
+    emulator.load(PROGRAM_PATH);
 
-    reader.read(mem.as_mut_slice())?;
+    // send Display into another thread and keep
+    // an SDL EventSender to send commands to the
+    // display across threads
 
     let mut display = Display::new();
-    display.demo();
+    let event_subsystem = display.sdl_context.event()?;
+    event_subsystem.register_custom_event::<crate::display::Event>();
+    let event_sender = event_subsystem.event_sender();
+    
+    std::thread::spawn(move || {
+        emulator.run(event_sender).unwrap();
+    });
 
-    loop {
 
-        // fetch
-
-        let instr_one = mem[usize::try_from(pc)?];
-        let instr_two = mem[usize::try_from(pc)?+1].to_be_bytes();
-
-        pc += 2;    // increment PC by 2 to point to next instruction
-
-        
-
-        // decode
-
-        match instr_one>>4 {
-            0x0 => {println!("clear screen")},
-            0x1 => {println!("jump")},
-            0x6 => {println!("set register")},
-            0x7 => {println!("add value")},
-            0xA => {println!("set index")},
-            0xD => {println!("display/draw")},
-            _ => {
-                dbg!(instr_one>>4);
-                todo!()
-            },
-        }
-
-        // execute
-
-    }
-
-    println!("Hello, world!");
+    Ok(())
 }
