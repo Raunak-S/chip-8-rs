@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // load Chip-8 program into memory
 
-    emulator.load(PROGRAM_PATH);
+    emulator.load_rom(PROGRAM_PATH);
 
     // send Display into another thread and keep
     // an SDL EventSender to send commands to the
@@ -28,6 +28,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     std::thread::spawn(move || {
         emulator.run(event_sender).unwrap();
     });
+
+    display.run();
 
     Ok(())
 }
