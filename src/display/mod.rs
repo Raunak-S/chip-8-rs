@@ -31,6 +31,24 @@ impl Display {
             canvas,
         }
     }
+    pub fn clear(&mut self) {
+        self.canvas.set_draw_color(Color::RGB(0, 0, 0));
+        self.canvas.clear();
+        self.canvas.present();
+    }
+    pub fn draw(&mut self, dbuf: [[u8; 64]; 32]) {
+        let mut points = vec![];
+        for i in 0..32 {
+            for j in 0..64 {
+                if dbuf[i][j] == 1 {
+                    points.push(Point::new(j as i32,i as i32));
+                }
+            }
+        }
+        self.canvas.set_draw_color(Color::RGB(255, 255, 255));
+        self.canvas.draw_points(&points[..]).unwrap();
+        self.canvas.present();
+    }
     pub fn run(&mut self) {
         self.canvas.set_draw_color(Color::RGB(0, 0, 0));
         self.canvas.clear();

@@ -2,7 +2,7 @@ use std::io::Read;
 
 use sdl2::event::EventSender;
 
-use crate::display::Event;
+use crate::display::{Event, Display};
 
 const FONT: [u8; 80] = 
 [0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -67,7 +67,10 @@ impl Emulator {
     fn set_register(&mut self, register: u8, value: u8) {
         self.registers[usize::try_from(register).unwrap()] = value;
     }
-    pub fn run(&mut self, event_sender: EventSender) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn run(&mut self, event_sender: Option<EventSender>) -> Result<(), Box<dyn std::error::Error>> {
+    
+        let mut display = Display::new();
+
         loop {
             // fetch
 
@@ -86,7 +89,7 @@ impl Emulator {
                 0x0 => {
                     // check for 00E0 command specifically? currently ignoring the last 3 bytes
 
-                    event_sender.push_custom_event(Event::Clear)?;
+                    display.clear();
                     println!("Screen cleared");
                 }
                 0x1 => {
@@ -152,7 +155,7 @@ impl Emulator {
                         }
                         y_coord += 1;
                     }
-                    event_sender.push_custom_event(Event::Draw(self.dbuf))?;
+                    display.draw(self.dbuf);
                     println!("display/draw");
                 }
                 _ => {
@@ -160,7 +163,6 @@ impl Emulator {
                     todo!()
                 }
             }
-            event_sender.push_custom_event(Event::Tick)?;
             ::std::thread::sleep(std::time::Duration::from_millis(500));
         }
 

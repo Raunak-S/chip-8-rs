@@ -16,20 +16,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     emulator.load_rom(PROGRAM_PATH);
 
-    // send Display into another thread and keep
-    // an SDL EventSender to send commands to the
-    // display across threads
-
-    let mut display = Display::new();
-    let event_subsystem = display.sdl_context.event()?;
-    event_subsystem.register_custom_event::<crate::display::Event>();
-    let event_sender = event_subsystem.event_sender();
-
-    std::thread::spawn(move || {
-        emulator.run(event_sender).unwrap();
-    });
-
-    display.run();
+    emulator.run(None).unwrap();
 
     Ok(())
 }
