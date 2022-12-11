@@ -1,8 +1,10 @@
-use std::io::Read;
+use std::{io::Read, time::Duration, collections::HashMap};
 
 use sdl2::event::EventSender;
 
-use crate::display::{Event, Display};
+use crossterm::event::{read, poll, Event, KeyCode};
+
+use crate::display::{Display};
 
 const FONT: [u8; 80] = 
 [0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -71,7 +73,32 @@ impl Emulator {
     
         let mut display = Display::new();
 
+        let keymap: HashMap<char, u8> = HashMap::from([
+            ('1',0x1),
+            ('2',0x2),
+            ('3',0x3),
+            ('4',0xc),
+            ('q',0x4),
+            ('w',0x5),
+            ('e',0x6),
+            ('r',0xd),
+            ('a',0x7),
+            ('s',0x8),
+            ('d',0x9),
+            ('f',0xe),
+            ('z',0xa),
+            ('x',0x0),
+            ('c',0xb),
+            ('v',0xf),
+        ]);
+
         loop {
+
+            // process user input
+
+            // let user_input = display.get_key();
+            // dbg!(user_input);
+
             // fetch
 
             let instr_one = self.mem[usize::try_from(self.pc)?];
@@ -97,6 +124,12 @@ impl Emulator {
                     self.pc = u16::from_be_bytes([0x0F & instr_one, instr_two]);
 
                     println!("Jumped to address {:#04x}", self.pc);
+                }
+                0x3 => {
+                    
+
+
+                    todo!()
                 }
                 0x6 => {
 

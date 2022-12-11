@@ -5,7 +5,7 @@ use crate::display::Display;
 use crate::emulator::Emulator;
 use std::{io::Read, path::Path};
 
-const PROGRAM_PATH: &str = "ibm-logo.ch8";
+const PROGRAM_PATH: &str = "roms/test_opcode.ch8";
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // initialize chip-8 emulator

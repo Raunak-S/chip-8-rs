@@ -49,6 +49,26 @@ impl Display {
         self.canvas.draw_points(&points[..]).unwrap();
         self.canvas.present();
     }
+    pub fn get_event_pump(&self) -> sdl2::EventPump {
+        self.sdl_context.event_pump().unwrap()
+    }
+    pub fn get_key(&self) -> Option<String> {
+        let mut event_pump = self.get_event_pump();
+        'running: loop {
+            for event in event_pump.poll_iter() {
+                match event {
+                    sdl2::event::Event::KeyDown {
+                        keycode: Some(char),
+                        ..
+                    } => {
+                        return Some(char.to_string());
+                    },
+                    _ => ()
+                }
+                return None;
+            }
+        }
+    }
     pub fn run(&mut self) {
         self.canvas.set_draw_color(Color::RGB(0, 0, 0));
         self.canvas.clear();
