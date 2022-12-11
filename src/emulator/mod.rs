@@ -126,10 +126,11 @@ impl Emulator {
                     println!("Jumped to address {:#04x}", self.pc);
                 }
                 0x3 => {
-                    
-
-
-                    todo!()
+                    let r_index =  0x0F & instr_one;
+                    if self.registers[usize::try_from(r_index).unwrap()] == instr_two {
+                        self.pc += 2;
+                    }
+                    println!("Skipped the next instruction if {} == {}", self.registers[usize::try_from(r_index).unwrap()],instr_two);
                 }
                 0x6 => {
 
